@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 24 * 60 * 60, // 24 hours
     updateAge: 60 * 60, // 1 hour
   },
-  secret: process.env.NEXTAUTH_SECRET || (process.env.NODE_ENV === 'production' ? undefined : 'dev-secret-key-do-not-use-in-production'),
+  secret: process.env.NEXTAUTH_SECRET,
   jwt: {
     maxAge: 24 * 60 * 60, // 24 hours
   },

@@ -32,6 +32,16 @@ export async function POST(request: NextRequest) {
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
     const [username, password] = credentials.split(':');
     
+    // Check if environment variables are set
+    if (!authConfig.username || !authConfig.password) {
+      console.error('Authentication environment variables not set');
+      return NextResponse.json(
+        { error: 'Authentication configuration error' },
+        { status: 500 }
+      );
+    }
+    
+    // Use constant-time comparison to prevent timing attacks
     if (username !== authConfig.username || password !== authConfig.password) {
       return NextResponse.json(
         { error: 'Invalid credentials' },

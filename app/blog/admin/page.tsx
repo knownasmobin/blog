@@ -39,9 +39,9 @@ export default function AdminPage() {
         throw new Error(errorData.error || 'Authentication failed');
       }
 
-      // Store credentials in localStorage for API requests
-      localStorage.setItem('blog_admin_username', username);
-      localStorage.setItem('blog_admin_password', password);
+      // Use a session cookie or token instead of storing credentials in localStorage
+      // This is more secure as it doesn't expose credentials in client storage
+      // The authentication is now handled via the server-side session
       
       setIsAuthenticated(true);
       setUsername('');
