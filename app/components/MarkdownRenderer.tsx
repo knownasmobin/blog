@@ -78,6 +78,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className 
       className={`markdown-body prose prose-sm md:prose-base lg:prose-lg dark:prose-invert max-w-none ${className} ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
       } transition-all duration-500 ease-out`}>
+      {/* @ts-ignore - ReactMarkdown has typing issues with React 18 */}
       <ReactMarkdown 
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[
@@ -274,11 +275,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content, className 
             <hr className="my-8 border-t border-gray-200 dark:border-gray-700" />
           ),
         } as Components}
-      >
-        {content}
-      </ReactMarkdown>
-    </div>
-  );
-};
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
+    );
+  };
 
 export default MarkdownRenderer;

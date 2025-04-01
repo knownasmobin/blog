@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { getBlogPostBySlug } from '@/lib/blog';
+import { getBlogPostBySlug, getBlogPosts } from '@/lib/blog';
 import { notFound } from 'next/navigation';
 import MarkdownRenderer from '../../components/MarkdownRenderer';
 
@@ -18,6 +18,11 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: `${post.title} | DevOps Blog`,
     description: post.excerpt,
   };
+}
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts();
+  return posts.map(post => ({ slug: post.slug }));
 }
 
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {

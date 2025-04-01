@@ -45,7 +45,7 @@ const experienceData = [
 ];
 
 export default function Experience() {
-  const sectionRef = useRef(null);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const [hasViewedAll, setHasViewedAll] = useState(false);
@@ -79,7 +79,9 @@ export default function Experience() {
       { threshold: 0 }
     );
     
-    resetObserver.observe(sectionRef.current);
+    if (sectionRef.current) {
+      resetObserver.observe(sectionRef.current);
+    }
     
     // Initial focus detection - force focus when section is in center of viewport
     const initialFocusCheck = () => {
@@ -114,10 +116,12 @@ export default function Experience() {
         // When section is in view with better thresholds
         if (entry.isIntersecting && entry.intersectionRatio > 0.7 && !focusedRef.current) {
           setIsFocused(true);
-          sectionRef.current.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'center'
-          });
+          if (sectionRef.current) {
+            sectionRef.current.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'center'
+            });
+          }
           
           if (activeIndexRef.current !== 0) {
             setActiveIndex(0);
@@ -135,7 +139,9 @@ export default function Experience() {
       }
     );
     
-    focusObserver.observe(sectionRef.current);
+    if (sectionRef.current) {
+      focusObserver.observe(sectionRef.current);
+    }
     
     // Add scroll event listener to help with focus detection
     const handleScroll = () => {
@@ -157,14 +163,14 @@ export default function Experience() {
   useEffect(() => {
     if (!sectionRef.current) return;
     
-    let wheelTimeout;
+    let wheelTimeout: NodeJS.Timeout | null = null;
     let lastScrollTime = 0;
     
-    const handleWheel = (e) => {
+    const handleWheel = (e: WheelEvent) => {
       // Simple focus detection
       if (!focusedRef.current) {
-        const rect = sectionRef.current.getBoundingClientRect();
-        if (rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.3) {
+        const rect = sectionRef.current?.getBoundingClientRect();
+        if (rect && rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.3) {
           setIsFocused(true);
           setActiveIndex(0);
           return;
@@ -205,23 +211,34 @@ export default function Experience() {
         }
       }
       
-      clearTimeout(wheelTimeout);
+      if (wheelTimeout) {
+        clearTimeout(wheelTimeout);
+      }
       wheelTimeout = setTimeout(() => {}, 100);
     };
     
     // Use passive: false to allow preventDefault
     const section = sectionRef.current;
-    section.addEventListener('wheel', handleWheel, { passive: false });
-    
-    // Cleanup
+    if (section) {
+      section.addEventListener('wheel', handleWheel, { passive: false });
+      
+      // Cleanup
+      return () => {
+        section.removeEventListener('wheel', handleWheel);
+        if (wheelTimeout) {
+          clearTimeout(wheelTimeout);
+        }
+      };
+    }
     return () => {
-      section.removeEventListener('wheel', handleWheel);
-      clearTimeout(wheelTimeout);
+      if (wheelTimeout) {
+        clearTimeout(wheelTimeout);
+      }
     };
   }, []);
   
   // Enhanced entry scrolling with improved handling for backward navigation
-  const scrollToEntry = (index) => {
+  const scrollToEntry = (index: number) => {
     // Set transitioning state to prevent interference from observers
     setIsTransitioning(true);
     
@@ -274,7 +291,7 @@ export default function Experience() {
   
   // Keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!focusedRef.current) return;
       
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
@@ -288,7 +305,7 @@ export default function Experience() {
           setIsFocused(false);
           
           // Scroll to next section
-          if (sectionRef.current.nextElementSibling) {
+          if (sectionRef.current && sectionRef.current.nextElementSibling instanceof HTMLElement) {
             sectionRef.current.nextElementSibling.scrollIntoView({ 
               behavior: 'auto',
               block: 'start'
@@ -311,7 +328,7 @@ export default function Experience() {
           setIsFocused(false);
           
           // Scroll to previous section
-          if (sectionRef.current.previousElementSibling) {
+          if (sectionRef.current && sectionRef.current.previousElementSibling instanceof HTMLElement) {
             sectionRef.current.previousElementSibling.scrollIntoView({ 
               behavior: 'auto',
               block: 'end'
@@ -443,7 +460,7 @@ export default function Experience() {
       
       // Cleanup function
       return () => {
-        if (sectionRef.current && sectionRef.current.contains(indicatorEl)) {
+        if (sectionRef.current && indicatorEl.parentElement === sectionRef.current) {
           sectionRef.current.removeChild(indicatorEl);
         }
         if (document.head.contains(styleEl)) {
