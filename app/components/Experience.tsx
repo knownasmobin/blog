@@ -532,7 +532,7 @@ export default function Experience() {
           {/* Timeline line */}
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-[var(--border-color)] transform -translate-x-1/2"></div>
           
-          <div className="space-y-12 md:space-y-24">
+          <div className="space-y-10 md:space-y-80">
             {experienceData.map((item, index) => {
               const isEven = index % 2 === 0;
               
