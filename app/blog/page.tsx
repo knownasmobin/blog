@@ -1,7 +1,5 @@
-import React from 'react';
-import Link from 'next/link';
 import { getBlogPosts } from '@/lib/blog';
-import MarkdownRenderer from '../components/MarkdownRenderer';
+import Link from 'next/link';
 
 export const metadata = {
   title: 'Blog | DevOps Engineer & SRE Specialist',
@@ -66,7 +64,6 @@ export default async function BlogPage() {
 
       <main className="container py-16">
         <div className="flex flex-col items-center mb-16">
-
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-2">
             <span className="gradient-text">Latest Articles & Insights</span>
           </h2>
@@ -90,15 +87,6 @@ export default async function BlogPage() {
                 <h3 className="text-xl font-semibold mb-3 text-[var(--text-color)] hover:text-[var(--primary)] transition-colors">
                   <Link href={`/blog/${post.slug}`}>{post.title}</Link>
                 </h3>
-                <div className="flex items-center text-xs text-[var(--muted)] mb-4">
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
-                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    {post.author || 'DevOps Engineer'}
-                  </span>
-                </div>
                 <p className="text-[var(--text-color)] mb-4 flex-grow line-clamp-3">{post.excerpt}</p>
                 <Link href={`/blog/${post.slug}`} className="text-[var(--primary)] hover:text-[var(--primary)]/80 transition-colors inline-flex items-center mt-auto group">
                   Read article

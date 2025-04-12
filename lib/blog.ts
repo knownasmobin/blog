@@ -1,15 +1,14 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import matter from 'gray-matter';
 
-export type BlogPost = {
+export interface BlogPost {
   slug: string;
   title: string;
   date: string;
-  author: string;
-  excerpt: string;
   content: string;
-};
+  excerpt?: string;
+}
 
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
@@ -26,68 +25,52 @@ export function ensureBlogDirectoryExists() {
 
 // Get all blog posts
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  ensureBlogDirectoryExists();
+  const blogDir = path.join(process.cwd(), 'content', 'blog');
+  const files = await fs.readdir(blogDir);
   
-  try {
-    const fileNames = fs.readdirSync(postsDirectory);
-    
-    const allPostsData = fileNames
-      .filter(fileName => fileName.endsWith('.md'))
-      .map(fileName => {
-        // Remove ".md" from file name to get slug
-        const slug = fileName.replace(/\.md$/, '');
+  const posts = await Promise.all(
+    files
+      .filter((file) => file.endsWith('.md'))
+      .map(async (file) => {
+        const filePath = path.join(blogDir, file);
+        const content = await fs.readFile(filePath, 'utf-8');
+        const { data, content: markdownContent } = matter(content);
         
-        // Read markdown file as string
-        const fullPath = path.join(postsDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        
-        // Use gray-matter to parse the post metadata section
-        const matterResult = matter(fileContents);
-        
-        // Combine the data with the slug
+        // Create an excerpt from the first paragraph
+        const excerpt = markdownContent
+          .split('\n\n')[0]
+          .replace(/[#*`_]/g, '')
+          .trim()
+          .slice(0, 200) + '...';
+
         return {
-          slug,
-          title: matterResult.data.title || '',
-          date: matterResult.data.date || '',
-          author: matterResult.data.author || '',
-          excerpt: matterResult.data.excerpt || '',
-          content: matterResult.content || '',
-        } as BlogPost;
+          slug: file.replace(/\.md$/, ''),
+          title: data.title,
+          date: data.date,
+          content: markdownContent,
+          excerpt,
+        };
       })
-      // Sort posts by date
-      .sort((a, b) => (new Date(b.date) > new Date(a.date) ? 1 : -1));
-      
-    return allPostsData;
-  } catch (error) {
-    console.error('Error getting blog posts:', error);
-    return [];
-  }
+  );
+
+  // Sort posts by date, newest first
+  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
 // Get a single blog post by slug
-export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  ensureBlogDirectoryExists();
-  
+export async function getBlogPost(slug: string): Promise<BlogPost | null> {
   try {
-    const fullPath = path.join(postsDirectory, `${slug}.md`);
-    
-    if (!fs.existsSync(fullPath)) {
-      return null;
-    }
-    
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const matterResult = matter(fileContents);
-    
+    const filePath = path.join(process.cwd(), 'content', 'blog', `${slug}.md`);
+    const content = await fs.readFile(filePath, 'utf-8');
+    const { data, content: markdownContent } = matter(content);
+
     return {
       slug,
-      title: matterResult.data.title || '',
-      date: matterResult.data.date || '',
-      author: matterResult.data.author || '',
-      excerpt: matterResult.data.excerpt || '',
-      content: matterResult.content || '',
-    } as BlogPost;
+      title: data.title,
+      date: data.date,
+      content: markdownContent,
+    };
   } catch (error) {
-    console.error(`Error getting blog post ${slug}:`, error);
     return null;
   }
 }
@@ -116,7 +99,7 @@ export async function saveBlogPost(post: Omit<BlogPost, 'slug'>): Promise<{ slug
   const fileContent = matter.stringify(post.content, frontmatter);
   
   // Write to file
-  fs.writeFileSync(fullPath, fileContent);
+  await fs.writeFile(fullPath, fileContent);
   
   return { slug };
 }
@@ -125,7 +108,7 @@ export async function saveBlogPost(post: Omit<BlogPost, 'slug'>): Promise<{ slug
 export async function updateBlogPost(slug: string, post: Partial<BlogPost>): Promise<{ slug: string }> {
   ensureBlogDirectoryExists();
   
-  const existingPost = await getBlogPostBySlug(slug);
+  const existingPost = await getBlogPost(slug);
   
   if (!existingPost) {
     throw new Error(`Blog post with slug ${slug} not found`);
@@ -150,7 +133,7 @@ export async function updateBlogPost(slug: string, post: Partial<BlogPost>): Pro
   const fileContent = matter.stringify(updatedPost.content, frontmatter);
   
   // Write to file
-  fs.writeFileSync(fullPath, fileContent);
+  await fs.writeFile(fullPath, fileContent);
   
   return { slug };
 }
@@ -161,8 +144,8 @@ export async function deleteBlogPost(slug: string): Promise<void> {
   
   const fullPath = path.join(postsDirectory, `${slug}.md`);
   
-  if (fs.existsSync(fullPath)) {
-    fs.unlinkSync(fullPath);
+  if (await fs.access(fullPath).then(() => true).catch(() => false)) {
+    await fs.unlink(fullPath);
   } else {
     throw new Error(`Blog post with slug ${slug} not found`);
   }

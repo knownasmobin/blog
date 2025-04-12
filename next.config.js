@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
-  distDir: 'out',
-  basePath: process.env.NODE_ENV === 'production' ? '/blog' : '',
-  trailingSlash: true,
-
+  output: 'standalone',
+  images: {
+    domains: ['avatars.githubusercontent.com'],
+  },
 };
 
 module.exports = nextConfig;
