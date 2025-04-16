@@ -45,7 +45,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# CMS (Directus)
+# CMS
 /cms/uploads/*
 /cms/extensions/*
 /cms/data.db
@@ -58,6 +58,7 @@ next-env.d.ts
 # Docker
 .dockerignore
 docker-compose.override.yml
+.docker/
 
 # IDE
 .idea/
@@ -85,3 +86,9 @@ logs
 *.temp
 *.bak
 *.backup
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal

@@ -1,59 +1,113 @@
 version: '3.8'
 
+# Define networks first for better organization
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+
+# Define volumes
+volumes:
+  postgres_data:
+    driver: local
+  cms_uploads:
+    driver: local
+  cms_extensions:
+    driver: local
+
 services:
+  # Frontend Service
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    container_name: website-frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_DIRECTUS_URL=http://directus:8055
       - NODE_ENV=production
+      - NEXT_PUBLIC_DIRECTUS_URL=http://directus:8055
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secure-secret-key}
     depends_on:
-      - directus
+      directus:
+        condition: service_healthy
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Directus CMS Service
   directus:
     image: directus/directus:latest
+    container_name: website-directus
+    restart: unless-stopped
     ports:
       - "8055:8055"
     environment:
-      - KEY=255d861b-5ea1-5996-9eb6-4e77cdd9399c
-      - SECRET=6116487b-cda1-52c2-b5b5-c8022c45e263
-      - ADMIN_EMAIL=admin@example.com
-      - ADMIN_PASSWORD=admin
+      # Security
+      - KEY=${DIRECTUS_KEY:-255d861b-5ea1-5996-9eb6-4e77cdd9399c}
+      - SECRET=${DIRECTUS_SECRET:-6116487b-cda1-52c2-b5b5-c8022c45e263}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      
+      # Database
       - DB_CLIENT=pg
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_DATABASE=directus
       - DB_USER=directus
-      - DB_PASSWORD=directus
+      - DB_PASSWORD=${DB_PASSWORD:-directus}
+      
+      # Cache
+      - CACHE_ENABLED=true
+      - CACHE_STORE=memory
+      
+      # Storage
+      - STORAGE_LOCATIONS=local
+      - STORAGE_LOCAL_DRIVER=local
+      - STORAGE_LOCAL_ROOT=/directus/uploads
     volumes:
-      - ./directus/uploads:/directus/uploads
-      - ./directus/database:/directus/database
+      - cms_uploads:/directus/uploads
+      - cms_extensions:/directus/extensions
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8055/server/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # PostgreSQL Database Service
   postgres:
     image: postgres:15-alpine
+    container_name: website-postgres
+    restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
       - POSTGRES_USER=directus
-      - POSTGRES_PASSWORD=directus
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-directus}
       - POSTGRES_DB=directus
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres_data: 
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U directus"]
+      interval: 10s
+      timeout: 5s
+      retries: 5 
