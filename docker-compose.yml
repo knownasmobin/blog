@@ -33,6 +33,7 @@ services:
       - NEXT_PUBLIC_DIRECTUS_URL=http://directus:8055
       - NEXTAUTH_URL=http://frontend:3000
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secure-secret-key}
+      - NEXT_TELEMETRY_DISABLED=1
     depends_on:
       directus:
         condition: service_healthy

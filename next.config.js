@@ -52,6 +52,9 @@ const nextConfig = {
     })
     return config
   },
+  // Disable Vercel analytics and speed insights
+  analyticsId: false,
+  speedInsights: false,
 }
 
 module.exports = nextConfig
