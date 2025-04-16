@@ -23,7 +23,7 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -37,7 +37,7 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
     setError(null);
 
     try {
-      const url = isEditing ? `/api/blog/${post?.slug}` : '/api/blog';
+      const url = isEditing ? `/api/blog/${post?.id}` : '/api/blog';
       const method = isEditing ? 'PUT' : 'POST';
       
       // Get stored credentials from localStorage
@@ -58,7 +58,7 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
         },
         body: JSON.stringify({
           ...formData,
-          date: post?.date || new Date().toISOString(),
+          publish_date: post?.publish_date || new Date().toISOString(),
         }),
       });
 

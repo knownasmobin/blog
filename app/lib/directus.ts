@@ -18,25 +18,43 @@ export interface BlogPost {
 }
 
 export const getBlogPosts = async () => {
-  return await directus.request(
-    readItems('blog_posts', {
-      filter: {
-        status: {
-          _eq: 'published'
-        }
-      },
-      sort: ['-publish_date'],
-      fields: ['*', 'featured_image.id', 'featured_image.filename_download']
-    })
-  );
+  try {
+    return await directus.request(
+      readItems('blog_posts', {
+        filter: {
+          status: {
+            _eq: 'published'
+          }
+        },
+        sort: ['-publish_date'],
+        fields: ['*', 'featured_image.id', 'featured_image.filename_download']
+      })
+    );
+  } catch (error) {
+    // During static generation, return empty array if Directus is not available
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('Directus server not available during static generation, returning empty array');
+      return [];
+    }
+    throw error;
+  }
 };
 
 export const getBlogPost = async (id: string) => {
-  return await directus.request(
-    readItem('blog_posts', id, {
-      fields: ['*', 'featured_image.id', 'featured_image.filename_download']
-    })
-  );
+  try {
+    return await directus.request(
+      readItem('blog_posts', id, {
+        fields: ['*', 'featured_image.id', 'featured_image.filename_download']
+      })
+    );
+  } catch (error) {
+    // During static generation, return null if Directus is not available
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('Directus server not available during static generation, returning null');
+      return null;
+    }
+    throw error;
+  }
 };
 
 export const createBlogPost = async (post: Omit<BlogPost, 'id'>) => {

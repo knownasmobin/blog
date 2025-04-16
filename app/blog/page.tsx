@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import ErrorBoundary from '@/app/components/ErrorBoundary';
 import Loading from '@/app/components/Loading';
 import OptimizedImage from '@/app/components/Image';
+import type { BlogPost } from '@/app/lib/directus';
 
 export const metadata = {
   title: 'Blog | Your Name',
@@ -41,7 +42,7 @@ async function BlogPosts() {
               <Link href={`/blog/${post.id}`}>{post.title}</Link>
             </h2>
             <div className="flex flex-wrap gap-2 mb-4">
-              {post.tags.map((tag) => (
+              {post.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="bg-[var(--primary)]/10 text-[var(--primary)] text-xs px-3 py-1 rounded-full"
