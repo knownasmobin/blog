@@ -1,8 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   images: {
-    domains: ['images.unsplash.com', 'avatars.githubusercontent.com'],
-    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '8055',
+        pathname: '/assets/**',
+      },
+    ],
   },
   async headers() {
     return [
