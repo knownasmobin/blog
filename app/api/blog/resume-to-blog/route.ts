@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { saveBlogPost } from '@/lib/blog';
-import fs from 'fs';
-import path from 'path';
+import { createBlogPost } from '@/app/lib/directus';
 
 // POST /api/blog/resume-to-blog - Generate a blog post from resume
 export async function POST(request: NextRequest) {
@@ -19,16 +17,17 @@ export async function POST(request: NextRequest) {
     // Generate content based on the resume and section
     const content = await generateContentFromResume(section, title);
     
-    // Save the blog post
-    const result = await saveBlogPost({
+    // Create the blog post in Directus
+    const post = await createBlogPost({
       title: title || `My ${section.charAt(0).toUpperCase() + section.slice(1)}`,
-      date: new Date().toISOString(),
-      author: 'Resume Author', // This would ideally be extracted from the resume
-      excerpt: `A blog post about my ${section} journey and expertise.`,
       content,
+      author: 'Resume Author', // This would ideally be extracted from the resume
+      publish_date: new Date().toISOString(),
+      status: 'published',
+      tags: [section],
     });
     
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json(post, { status: 201 });
   } catch (error) {
     console.error('Error generating blog post from resume:', error);
     return NextResponse.json(
@@ -48,107 +47,98 @@ async function generateContentFromResume(section: string, customTitle?: string):
   const templates: Record<string, string> = {
     experience: `# ${title}
 
-In my professional journey, I've had the opportunity to work with various technologies and teams. This post highlights some key experiences and lessons learned along the way.
+## Professional Journey
 
-## Career Highlights
+In this post, I'll share my professional journey and the experiences that have shaped my career in ${section}.
 
-- Worked on challenging projects that improved my technical and soft skills
-- Collaborated with cross-functional teams to deliver high-quality solutions
-- Developed expertise in various technologies and methodologies
+## Key Achievements
+
+- Achievement 1
+- Achievement 2
+- Achievement 3
 
 ## Lessons Learned
 
-Throughout my career, I've learned that continuous learning and adaptation are essential in the fast-paced tech industry. Staying curious and open to new ideas has helped me grow professionally.
+Throughout my journey, I've learned valuable lessons about ${section} that I'd like to share with you.
 
-## Future Goals
+## Looking Forward
 
-As I continue my professional journey, I aim to further develop my expertise and contribute to innovative projects that make a positive impact.
-
----
-
-*This post was generated from my resume.*`,
+I'm excited about the future of ${section} and how it will continue to evolve in our industry.`,
     
     education: `# ${title}
 
-Education has played a crucial role in shaping my career and professional identity. This post outlines my academic journey and how it has influenced my professional path.
-
 ## Academic Background
 
-- Formal education in relevant fields
-- Continuous learning through courses and certifications
-- Self-directed learning and exploration
+In this post, I'll discuss my educational journey and how it has prepared me for my career in ${section}.
 
 ## Key Learnings
 
-My educational journey has taught me the importance of building a strong foundation while remaining adaptable and open to new knowledge and perspectives.
+- Learning 1
+- Learning 2
+- Learning 3
 
-## Applying Knowledge
+## Practical Applications
 
-I've been able to apply theoretical knowledge to practical scenarios, which has enhanced my problem-solving abilities and technical skills.
+How my education has translated into real-world applications in ${section}.
 
----
+## Continuous Learning
 
-*This post was generated from my resume.*`,
+The importance of ongoing education in the field of ${section}.`,
     
     skills: `# ${title}
 
-In today's rapidly evolving tech landscape, having a diverse skill set is essential. This post highlights my technical skills and how I apply them in my work.
+## Technical Skills
 
-## Technical Expertise
+In this post, I'll outline the key skills I've developed in ${section} and how they contribute to my work.
 
-- Programming languages and frameworks
-- DevOps tools and methodologies
-- Cloud platforms and infrastructure
+## Core Competencies
 
-## Soft Skills
+- Skill 1
+- Skill 2
+- Skill 3
 
-Beyond technical abilities, I've developed important soft skills such as communication, teamwork, and problem-solving that are crucial for success in collaborative environments.
+## Skill Development
 
-## Continuous Improvement
+How I've honed these skills over time and continue to improve them.
 
-I believe in continuous learning and regularly update my skills to stay current with industry trends and best practices.
+## Future Skills
 
----
-
-*This post was generated from my resume.*`,
+The skills I'm currently developing to stay ahead in ${section}.`,
     
     projects: `# ${title}
 
-Projects are the best way to demonstrate skills and expertise. This post showcases some of the significant projects I've worked on and the impact they've had.
+## Project Portfolio
 
-## Notable Projects
+In this post, I'll showcase some of my key projects in ${section} and what I've learned from them.
 
-- Project descriptions and technologies used
-- Challenges faced and solutions implemented
-- Outcomes and lessons learned
+## Featured Projects
 
-## Approach to Projects
+- Project 1
+- Project 2
+- Project 3
 
-My approach to projects involves thorough planning, effective communication, and a focus on delivering value while maintaining code quality and performance.
+## Project Highlights
 
-## Future Projects
+Key achievements and challenges overcome in these projects.
 
-I'm always looking for new challenges and opportunities to apply my skills to interesting and impactful projects.
+## Lessons Learned
 
----
-
-*This post was generated from my resume.*`
+What these projects have taught me about ${section} and project management.`
   };
   
-  // Return the template for the requested section or a default template
   return templates[section] || `# ${title}
 
-This is a blog post generated from my resume's ${section} section.
+## About This Post
 
-## Overview
+This is a blog post about my experience and expertise in ${section}.
 
-This section of my resume highlights my ${section} and how it has contributed to my professional development.
+## Key Points
 
-## Details
+- Point 1
+- Point 2
+- Point 3
 
-More specific information about my ${section} would be included here, extracted from my resume.
+## Conclusion
 
----
-
-*This post was generated from my resume.*`;
+My thoughts on the future of ${section} and how it impacts our industry.`;
 }
