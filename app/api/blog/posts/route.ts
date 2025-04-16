@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { createBlogPost } from '@/app/lib/directus';
-import slugify from 'slugify';
 
 export async function POST(request: Request) {
   try {
@@ -13,14 +12,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const slug = slugify(title, { lower: true, strict: true });
     const publish_date = new Date().toISOString();
 
     const post = await createBlogPost({
       title,
       content,
       author,
-      slug,
       publish_date,
       status: 'published',
       tags: [],

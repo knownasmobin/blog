@@ -4,7 +4,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Link from 'next/link';
-import RichTextEditor from '@/app/components/RichTextEditor';
 
 export default function NewPost() {
   const { data: session, status } = useSession();
@@ -29,7 +28,7 @@ export default function NewPost() {
     setError(null);
 
     try {
-      const response = await fetch('/api/blog', {
+      const response = await fetch('/api/blog/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +37,6 @@ export default function NewPost() {
           title,
           content,
           author: session.user?.name || 'Admin',
-          excerpt: content.substring(0, 200) + '...', // Create a simple excerpt from the content
         }),
       });
 
@@ -102,10 +100,13 @@ export default function NewPost() {
               <label htmlFor="content" className="block text-sm font-medium mb-2">
                 Content
               </label>
-              <RichTextEditor
-                content={content}
-                onChange={setContent}
+              <textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full h-64 px-3 py-2 border border-[var(--border-color)] rounded-md bg-[var(--background)]"
                 placeholder="Start writing your blog post..."
+                required
               />
             </div>
 
