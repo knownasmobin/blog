@@ -14,9 +14,11 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
   const router = useRouter();
   const [formData, setFormData] = useState({
     title: post?.title || '',
-    excerpt: post?.excerpt || '',
     content: post?.content || '',
     author: post?.author || '',
+    featured_image: post?.featured_image || null,
+    tags: post?.tags || [],
+    status: post?.status || 'draft',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -116,22 +118,6 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="excerpt" className="block font-medium">
-          Excerpt <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          id="excerpt"
-          name="excerpt"
-          value={formData.excerpt}
-          onChange={handleChange}
-          required
-          className="w-full p-3 border border-[var(--border-color)] rounded-md bg-[var(--background)] text-[var(--text-color)]"
-          placeholder="Brief summary of the post"
-        />
-      </div>
-
-      <div className="space-y-2">
         <label htmlFor="content" className="block font-medium">
           Content <span className="text-red-500">*</span>
         </label>
@@ -145,6 +131,23 @@ export default function BlogPostForm({ post, isEditing = false }: BlogPostFormPr
           className="w-full p-3 border border-[var(--border-color)] rounded-md bg-[var(--background)] text-[var(--text-color)]"
           placeholder="Write your blog post content here..."
         />
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="status" className="block font-medium">
+          Status <span className="text-red-500">*</span>
+        </label>
+        <select
+          id="status"
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          required
+          className="w-full p-3 border border-[var(--border-color)] rounded-md bg-[var(--background)] text-[var(--text-color)]"
+        >
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+        </select>
       </div>
 
       <div className="flex justify-end space-x-4">

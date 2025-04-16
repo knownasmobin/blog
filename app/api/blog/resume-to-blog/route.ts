@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
       publish_date: new Date().toISOString(),
       status: 'published',
       tags: [section],
+      featured_image: null, // No featured image for auto-generated posts
     });
     
     return NextResponse.json(post, { status: 201 });
