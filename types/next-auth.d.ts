@@ -10,20 +10,22 @@ declare module 'next-auth' {
       /** The user's id. */
       id: string;
       /** The user's role. */
-      role?: string;
+      role: string;
     } & DefaultSession['user'];
   }
 
   interface User {
     /** The user's role. */
-    role?: string;
+    role: string;
   }
 }
 
 declare module 'next-auth/jwt' {
   /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
   interface JWT {
+    /** The user's id. */
+    id: string;
     /** The user's role. */
-    role?: string;
+    role: string;
   }
 }

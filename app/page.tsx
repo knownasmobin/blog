@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import Skills from "./components/Skills";
-import Experience from "./components/Experience";
+import Experience from '@/app/components/Experience';
 import Education from "./components/Education";
 import Publications from "./components/Publications";
+import SkillsList from './components/SkillsList';
 
 export default function Home() {
   return (
@@ -82,7 +83,63 @@ export default function Home() {
         <Experience />
         
         {/* Skills Section */}
-        <Skills />
+        <section id="skills" className="section py-24 bg-[var(--light-bg)]">
+          <div className="container">
+            <h2 className="text-3xl font-bold mb-12 text-center">Skills & Expertise</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <SkillsList
+                title="DevOps Tools"
+                skills={[
+                  'Docker',
+                  'Kubernetes',
+                  'CI/CD Pipelines',
+                  'GitOps'
+                ]}
+              />
+              <SkillsList
+                title="Cloud Platforms"
+                skills={[
+                  'AWS',
+                  'Google Cloud',
+                  'Terraform'
+                ]}
+              />
+              <SkillsList
+                title="Programming Languages"
+                skills={[
+                  'Golang',
+                  'Python',
+                  'C++',
+                  'Bash'
+                ]}
+              />
+              <SkillsList
+                title="Web Technologies"
+                skills={[
+                  'JavaScript',
+                  'TypeScript',
+                  'React',
+                  'Node.js'
+                ]}
+              />
+              <SkillsList
+                title="Systems & Tools"
+                skills={[
+                  'Linux',
+                  'Git',
+                  'Apache Hadoop'
+                ]}
+              />
+              <SkillsList
+                title="Databases"
+                skills={[
+                  'PostgreSQL',
+                  'MongoDB'
+                ]}
+              />
+            </div>
+          </div>
+        </section>
         
         {/* Education Section */}
         <Education />

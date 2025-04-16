@@ -13,13 +13,17 @@ export interface BlogPost {
 const postsDirectory = path.join(process.cwd(), 'content/blog');
 
 // Ensure the blog content directory exists
-export function ensureBlogDirectoryExists() {
-  if (!fs.existsSync(path.join(process.cwd(), 'content'))) {
-    fs.mkdirSync(path.join(process.cwd(), 'content'));
+export async function ensureBlogDirectoryExists() {
+  try {
+    await fs.access(path.join(process.cwd(), 'content'));
+  } catch {
+    await fs.mkdir(path.join(process.cwd(), 'content'));
   }
   
-  if (!fs.existsSync(postsDirectory)) {
-    fs.mkdirSync(postsDirectory);
+  try {
+    await fs.access(postsDirectory);
+  } catch {
+    await fs.mkdir(postsDirectory);
   }
 }
 
@@ -77,7 +81,7 @@ export async function getBlogPost(slug: string): Promise<BlogPost | null> {
 
 // Create or update a blog post
 export async function saveBlogPost(post: Omit<BlogPost, 'slug'>): Promise<{ slug: string }> {
-  ensureBlogDirectoryExists();
+  await ensureBlogDirectoryExists();
   
   // Generate slug from title
   const slug = post.title
@@ -106,7 +110,7 @@ export async function saveBlogPost(post: Omit<BlogPost, 'slug'>): Promise<{ slug
 
 // Update an existing blog post
 export async function updateBlogPost(slug: string, post: Partial<BlogPost>): Promise<{ slug: string }> {
-  ensureBlogDirectoryExists();
+  await ensureBlogDirectoryExists();
   
   const existingPost = await getBlogPost(slug);
   
@@ -140,13 +144,14 @@ export async function updateBlogPost(slug: string, post: Partial<BlogPost>): Pro
 
 // Delete a blog post
 export async function deleteBlogPost(slug: string): Promise<void> {
-  ensureBlogDirectoryExists();
+  await ensureBlogDirectoryExists();
   
   const fullPath = path.join(postsDirectory, `${slug}.md`);
   
-  if (await fs.access(fullPath).then(() => true).catch(() => false)) {
+  try {
+    await fs.access(fullPath);
     await fs.unlink(fullPath);
-  } else {
+  } catch (error) {
     throw new Error(`Blog post with slug ${slug} not found`);
   }
 }

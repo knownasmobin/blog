@@ -1,44 +1,37 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { createBlogPost } from '@/app/lib/directus';
 import slugify from 'slugify';
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { title, content, date } = body;
+    const { title, content, author, featured_image } = await request.json();
 
-    if (!title || !content) {
+    if (!title || !content || !author) {
       return NextResponse.json(
-        { error: 'Title and content are required' },
+        { error: 'Title, content, and author are required' },
         { status: 400 }
       );
     }
 
-    // Create a slug from the title
     const slug = slugify(title, { lower: true, strict: true });
+    const publish_date = new Date().toISOString();
 
-    // Create the blog post content in markdown format
-    const postContent = `---
-title: ${title}
-date: ${date}
----
+    const post = await createBlogPost({
+      title,
+      content,
+      author,
+      slug,
+      publish_date,
+      status: 'published',
+      tags: [],
+      featured_image: featured_image || null,
+    });
 
-${content}`;
-
-    // Ensure the blog directory exists
-    const blogDir = path.join(process.cwd(), 'content', 'blog');
-    await fs.mkdir(blogDir, { recursive: true });
-
-    // Write the file
-    const filePath = path.join(blogDir, `${slug}.md`);
-    await fs.writeFile(filePath, postContent, 'utf-8');
-
-    return NextResponse.json({ success: true, slug });
+    return NextResponse.json(post);
   } catch (error) {
-    console.error('Error saving blog post:', error);
+    console.error('Error creating blog post:', error);
     return NextResponse.json(
-      { error: 'Failed to save blog post' },
+      { error: 'Failed to create blog post' },
       { status: 500 }
     );
   }

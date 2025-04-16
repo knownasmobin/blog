@@ -1,36 +1,177 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Website with Next.js and Directus CMS
 
-## Getting Started
+A modern personal website built with Next.js and Directus CMS, featuring a blog system and portfolio management.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
+- **CMS**: Directus
+- **Database**: PostgreSQL
+- **Containerization**: Docker & Docker Compose
+
+## Prerequisites
+
+- Docker and Docker Compose installed
+- Git
+
+## Project Structure
+
+```
+.
+├── app/                    # Next.js application
+├── directus/              # Directus CMS data
+│   ├── uploads/           # Media files
+│   └── database/          # Database files
+├── public/                # Static files
+├── .env                   # Environment variables
+├── docker-compose.yml     # Docker Compose configuration
+└── Dockerfile            # Frontend Docker configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Production Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Initial Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd website
+   ```
 
-## Learn More
+2. Create necessary directories:
+   ```bash
+   mkdir -p directus/uploads directus/database
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. Create and configure environment file:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your production values
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. Build and start the services:
+   ```bash
+   docker-compose up -d --build
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Access the services:
+   - Frontend: http://your-domain:3000
+   - Directus Admin: http://your-domain:8055
+   - Directus API: http://your-domain:8055
 
-## Deploy on Vercel
+### Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env` file with the following variables:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+# Next.js Frontend
+NEXT_PUBLIC_DIRECTUS_URL=http://your-domain:8055
+NEXTAUTH_URL=http://your-domain:3000
+NEXTAUTH_SECRET=your-secure-secret-key
+
+# Directus
+DIRECTUS_URL=http://your-domain:8055
+ADMIN_EMAIL=your-admin-email
+ADMIN_PASSWORD=your-secure-password
+DB_PASSWORD=your-secure-db-password
+```
+
+### Directus Setup
+
+1. Access the Directus admin panel
+2. Log in with your admin credentials
+3. Create necessary collections:
+   - blog_posts
+   - portfolio_items
+   - media
+
+## Production Maintenance
+
+### Backups
+
+1. Database backup:
+   ```bash
+   docker-compose exec postgres pg_dump -U directus directus > backup_$(date +%Y%m%d).sql
+   ```
+
+2. Media files backup:
+   ```bash
+   tar -czf media_backup_$(date +%Y%m%d).tar.gz directus/uploads/
+   ```
+
+### Updates
+
+1. Pull latest changes:
+   ```bash
+   git pull origin main
+   ```
+
+2. Update Docker images:
+   ```bash
+   docker-compose pull
+   docker-compose up -d --build
+   ```
+
+### Monitoring
+
+1. Check service status:
+   ```bash
+   docker-compose ps
+   ```
+
+2. View logs:
+   ```bash
+   docker-compose logs -f [service-name]
+   ```
+
+## Security Considerations
+
+1. **Environment Variables**:
+   - Use strong, unique passwords
+   - Keep secrets secure
+   - Never commit .env file
+
+2. **Network Security**:
+   - Configure firewall rules
+   - Use HTTPS
+   - Restrict access to admin interfaces
+
+3. **Regular Updates**:
+   - Keep Docker images updated
+   - Monitor for security patches
+   - Regular backups
+
+## Troubleshooting
+
+### Common Issues
+
+1. **Service Not Starting**:
+   ```bash
+   docker-compose logs [service-name]
+   ```
+
+2. **Database Issues**:
+   ```bash
+   docker-compose exec postgres psql -U directus
+   ```
+
+3. **Directus Issues**:
+   ```bash
+   docker-compose logs directus
+   ```
+
+### Recovery
+
+1. **Database Recovery**:
+   ```bash
+   docker-compose exec -T postgres psql -U directus directus < backup.sql
+   ```
+
+2. **Media Recovery**:
+   ```bash
+   tar -xzf media_backup.tar.gz -C directus/uploads/
+   ```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.

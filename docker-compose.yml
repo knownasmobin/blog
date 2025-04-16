@@ -1,19 +1,59 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
+      - NEXT_PUBLIC_DIRECTUS_URL=http://directus:8055
       - NODE_ENV=production
-      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+    depends_on:
+      - directus
+    networks:
+      - app-network
+
+  directus:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+    environment:
+      - KEY=255d861b-5ea1-5996-9eb6-4e77cdd9399c
+      - SECRET=6116487b-cda1-52c2-b5b5-c8022c45e263
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=admin
+      - DB_CLIENT=pg
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=directus
+      - DB_USER=directus
+      - DB_PASSWORD=directus
     volumes:
-      - ./content:/app/content
-    restart: unless-stopped
+      - ./directus/uploads:/directus/uploads
+      - ./directus/database:/directus/database
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=directus
+      - POSTGRES_PASSWORD=directus
+      - POSTGRES_DB=directus
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   postgres_data: 

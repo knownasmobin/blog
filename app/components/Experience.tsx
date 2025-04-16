@@ -416,60 +416,6 @@ export default function Experience() {
     };
   }, [isTransitioning]);
   
-  // Show a visual indicator when we've viewed all entries
-  useEffect(() => {
-    if (hasViewedAll && isFocused) {
-      // Create the indicator element
-      const indicatorEl = document.createElement('div');
-      indicatorEl.className = 'continue-indicator';
-      indicatorEl.innerHTML = `
-        <div class="flex flex-col items-center p-4 text-[var(--primary)]">
-          <span class="text-sm font-medium mb-1">Continue scrolling</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce">
-            <path d="M7 13l5 5 5-5"></path>
-            <path d="M7 6l5 5 5-5"></path>
-          </svg>
-        </div>
-      `;
-      
-      // Style the indicator
-      indicatorEl.style.cssText = `
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 20;
-        opacity: 0;
-        animation: fadeInIndicator 0.5s ease forwards;
-      `;
-      
-      // Create and apply the animation styles
-      const styleEl = document.createElement('style');
-      styleEl.textContent = `
-        @keyframes fadeInIndicator {
-          from { opacity: 0; transform: translate(-50%, 10px); }
-          to { opacity: 1; transform: translate(-50%, 0); }
-        }
-      `;
-      document.head.appendChild(styleEl);
-      
-      // Add indicator to the page
-      if (sectionRef.current) {
-        sectionRef.current.appendChild(indicatorEl);
-      }
-      
-      // Cleanup function
-      return () => {
-        if (sectionRef.current && indicatorEl.parentElement === sectionRef.current) {
-          sectionRef.current.removeChild(indicatorEl);
-        }
-        if (document.head.contains(styleEl)) {
-          document.head.removeChild(styleEl);
-        }
-      };
-    }
-  }, [hasViewedAll, isFocused]);
-
   // Section observation for general viewport visibility
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -532,7 +478,7 @@ export default function Experience() {
           {/* Timeline line */}
           <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-[var(--border-color)] transform -translate-x-1/2"></div>
           
-          <div className="space-y-10 md:space-y-80">
+          <div className="space-y-64 md:space-y-[32rem]">
             {experienceData.map((item, index) => {
               const isEven = index % 2 === 0;
               
@@ -540,7 +486,7 @@ export default function Experience() {
                 <div 
                   key={index} 
                   data-index={index}
-                  className={`relative experience-entry flex flex-col md:flex-row md:items-stretch z-10 gap-8 ${isEven ? 'md:flex-row-reverse md:pr-8' : 'md:pl-8'}`}
+                  className={`relative experience-entry flex flex-col md:flex-row md:items-stretch z-10 gap-16 ${isEven ? 'md:flex-row-reverse md:pr-8' : 'md:pl-8'}`}
                 >
                   {/* Timeline dot */}
                   <div className={`
@@ -565,7 +511,7 @@ export default function Experience() {
                       {item.period}
                     </div>
                     <div className={`
-                      p-6 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] 
+                      p-8 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] 
                       shadow-sm transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] text-left
                       ${index === activeIndex 
                         ? 'opacity-100 scale-100 border-[var(--primary)] shadow-lg transform translate-y-0' 
@@ -599,18 +545,15 @@ export default function Experience() {
           </div>
         </div>
         
-        {/* Progress indicator */}
-        {isFocused && (
-          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-[var(--card-bg)] px-4 py-2 rounded-full shadow-md border border-[var(--border-color)] z-50 transition-opacity duration-300">
-            <div className="flex items-center gap-2">
-              {experienceData.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                    i === activeIndex ? 'bg-[var(--primary)] scale-125' : 'bg-[var(--border-color)]'
-                  }`}
-                />
-              ))}
+        {/* Continue scrolling indicator */}
+        {hasViewedAll && isFocused && (
+          <div className="continue-indicator">
+            <div className="flex flex-col items-center p-4 text-[var(--primary)]">
+              <span className="text-sm font-medium mb-1">Continue scrolling</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
+                <path d="M7 13l5 5 5-5"></path>
+                <path d="M7 6l5 5 5-5"></path>
+              </svg>
             </div>
           </div>
         )}

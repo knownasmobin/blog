@@ -38,6 +38,7 @@ export default function NewPost() {
           title,
           content,
           author: session.user?.name || 'Admin',
+          excerpt: content.substring(0, 200) + '...', // Create a simple excerpt from the content
         }),
       });
 

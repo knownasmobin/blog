@@ -39,30 +39,84 @@ html {
   position: relative;
 }
 
+/* Improved link contrast and accessibility */
+a {
+  @apply text-[var(--link-color)] hover:text-[var(--link-hover)] visited:text-[var(--link-visited)] transition-colors;
+  text-decoration: none;
+  position: relative;
+  font-weight: 500;
+}
+
+a:not(.btn):not(.social-link)::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--link-color);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+a:not(.btn):not(.social-link):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+a:focus {
+  @apply outline-none ring-2 ring-[var(--primary)] ring-offset-2 ring-offset-[var(--background)];
+}
+
+/* Improved button styles */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   font-weight: 600;
   border-radius: 0.5rem;
   transition: all 0.3s ease;
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  z-index: 1;
+  color: var(--button-text);
+  border: 2px solid transparent;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.btn:hover::after {
+  transform: translateX(0);
 }
 
 .btn-primary {
-  background-color: var(--primary);
-  color: white;
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+  background-color: var(--button-bg);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  border-color: var(--button-bg);
 }
 
 .btn-primary:hover {
-  background-color: var(--secondary);
+  background-color: var(--button-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+  border-color: var(--button-hover);
+}
+
+.btn.btn-secondary {
+  @apply border border-[var(--border-color)] hover:bg-[var(--light-bg)] shadow-sm hover:shadow-md;
 }
 
 .btn-outline {
@@ -80,18 +134,23 @@ html {
 
 :root {
   --background: #ffffff;
-  --foreground: #0f172a;
-  --primary: #3b82f6;
-  --secondary: #8b5cf6;
-  --accent: #f43f5e;
-  --muted: #64748b;
-  --text-color: #0f172a;
-  --light-bg: #f8fafc;
-  --card-bg: #ffffff;
-  --border-color: #e2e8f0;
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --foreground: #000000;
+  --card-bg: #f8f9fa;
+  --border-color: #e9ecef;
+  --text-color: #212529;
+  --muted: #6c757d;
+  --primary: #0d6efd;
+  --secondary: #6c757d;
+  --accent: #0dcaf0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --link-color: #2563eb;
+  --link-hover: #1d4ed8;
+  --link-visited: #1e40af;
+  --button-bg: #2563eb;
+  --button-hover: #1d4ed8;
+  --button-text: #ffffff;
 }
 
 @theme inline {
@@ -107,19 +166,24 @@ html {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --primary: #6366f1;
-    --secondary: #a78bfa;
-    --accent: #f472b6;
-    --muted: #94a3b8;
-    --text-color: #f8fafc;
-    --light-bg: #1e293b;
-    --card-bg: #1e293b;
-    --border-color: #334155;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --background: #0a0a0a;
+    --foreground: #ffffff;
+    --card-bg: #1a1a1a;
+    --border-color: #2d2d2d;
+    --text-color: #e9ecef;
+    --muted: #adb5bd;
+    --primary: #0d6efd;
+    --secondary: #6c757d;
+    --accent: #0dcaf0;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --link-color: #60a5fa;
+    --link-hover: #3b82f6;
+    --link-visited: #93c5fd;
+    --button-bg: #3b82f6;
+    --button-hover: #2563eb;
+    --button-text: #ffffff;
   }
 }
 
@@ -136,12 +200,30 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    var(--background) 0%,
+    var(--card-bg) 100%
+  );
+  background-attachment: fixed;
 }
 
 /* Resume section styles */
 .resume-section {
   margin-bottom: 3rem;
   position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: transform, opacity;
+  animation: fadeInUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--section-index) * 0.1s);
+  scroll-margin-top: 2rem;
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
 }
 
 .resume-section h2 {
@@ -153,6 +235,22 @@ body {
   font-weight: 700;
   letter-spacing: -0.025em;
   display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.resume-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--primary), var(--accent));
+  transform: translateX(-100%);
+  will-change: transform;
+  animation: slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--section-index) * 0.1s + 0.1s);
 }
 
 .resume-item {
@@ -162,9 +260,16 @@ body {
   border-radius: 0.75rem;
   border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm);
-  transition: all 0.3s ease;
+  will-change: transform, box-shadow, border-color;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   position: relative;
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--section-index) * 0.1s + var(--item-index) * 0.05s + 0.15s);
 }
 
 .resume-item::before {
@@ -176,7 +281,8 @@ body {
   height: 100%;
   background: linear-gradient(to bottom, var(--primary), var(--accent));
   opacity: 0;
-  transition: opacity 0.3s ease;
+  will-change: opacity;
+  transition: opacity 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .resume-item:hover {
@@ -189,17 +295,44 @@ body {
   opacity: 1;
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 /* Blog card styles */
 .blog-card {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 1rem;
   padding: 2rem;
-  transition: all 0.3s ease;
+  will-change: transform, box-shadow, border-color;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   box-shadow: var(--shadow-sm);
   height: 100%;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--section-index) * 0.1s + var(--item-index) * 0.05s + 0.15s);
 }
 
 .blog-card:hover {
@@ -214,12 +347,24 @@ body {
   color: var(--foreground);
   font-size: 1.25rem;
   line-height: 1.4;
+  will-change: color;
+  transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.blog-card:hover h3 {
+  color: var(--primary);
 }
 
 .blog-card p {
   color: var(--muted);
   margin-bottom: 1.5rem;
   flex-grow: 1;
+  will-change: color;
+  transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.blog-card:hover p {
+  color: var(--text-color);
 }
 
 .blog-card a {
@@ -228,12 +373,16 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  will-change: color, gap, transform;
+  transition: color 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              gap 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .blog-card a:hover {
   color: var(--accent);
   gap: 0.75rem;
+  transform: translateX(4px);
 }
 
 /* Animation utilities */
@@ -296,32 +445,90 @@ body {
   100% { transform: translateY(0px); }
 }
 
-/* Enhanced button styles */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.75rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+/* Ensure minimum contrast ratio of 4.5:1 for normal text and 3:1 for large text */
+.text-muted {
+  @apply text-[var(--muted)];
+  opacity: 0.9;
 }
 
-.btn::after {
+.text-primary {
+  @apply text-[var(--primary)];
+  opacity: 1;
+}
+
+/* Improve focus states for better accessibility */
+*:focus-visible {
+  @apply outline-none ring-2 ring-[var(--primary)] ring-offset-2 ring-offset-[var(--background)];
+}
+
+/* Improve heading contrast */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-[var(--text-color)];
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Improved form element contrast */
+input, textarea, select {
+  @apply text-[var(--text-color)] bg-[var(--background)] border-[var(--border-color)];
+  border-width: 2px;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  @apply ring-2 ring-[var(--primary)] ring-offset-2 ring-offset-[var(--background)];
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Improved button contrast */
+button {
+  @apply text-[var(--button-text)] bg-[var(--button-bg)] hover:bg-[var(--button-hover)] shadow-sm hover:shadow-md transition-all duration-200 font-medium;
+  border: 2px solid transparent;
+}
+
+/* Improved card contrast */
+.card {
+  @apply bg-[var(--card-bg)] border-[var(--border-color)] shadow-sm hover:shadow-md;
+  border-width: 2px;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Add a subtle pattern overlay */
+body::before {
   content: '';
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  position: fixed;
   top: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 1px 1px, var(--border-color) 1px, transparent 0);
+  background-size: 40px 40px;
+  opacity: 0.1;
+  pointer-events: none;
+  z-index: -1;
 }
 
-.btn:hover::after {
-  transform: translateX(0);
+@keyframes fadeInIndicator {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.continue-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  opacity: 0;
+  animation: fadeInIndicator 0.5s ease forwards;
 }
