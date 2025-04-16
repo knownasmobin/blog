@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { BlogPost } from '@/lib/blog';
+import { useSession } from 'next-auth/react';
+import type { BlogPost } from '@/app/lib/directus';
 
 type BlogPostFormProps = {
   post?: Partial<BlogPost>;

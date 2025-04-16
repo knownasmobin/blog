@@ -1,9 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import RichTextEditor from '../../components/RichTextEditor';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import type { BlogPost } from '@/app/lib/directus';
 
 export default function NewBlogPost() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [saving, setSaving] = useState(false);
@@ -15,12 +19,16 @@ export default function NewBlogPost() {
       return;
     }
 
+    if (!session) {
+      setError('You must be logged in to create a blog post');
+      return;
+    }
+
     setSaving(true);
     setError('');
 
     try {
-      // Create a pull request using GitHub's API
-      const response = await fetch('/api/github/create-pr', {
+      const response = await fetch('/api/blog', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,12 +36,14 @@ export default function NewBlogPost() {
         body: JSON.stringify({
           title,
           content,
-          date: new Date().toISOString(),
+          author: session.user?.name || 'Anonymous',
+          publish_date: new Date().toISOString(),
+          status: 'published',
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create pull request');
+        throw new Error('Failed to create blog post');
       }
 
       const data = await response.json();
@@ -42,11 +52,11 @@ export default function NewBlogPost() {
       setTitle('');
       setContent('');
       
-      // Show success message with PR link
-      alert(`Pull request created successfully! You can view it here: ${data.prUrl}`);
+      // Redirect to the new post
+      router.push(`/blog/${data.slug}`);
     } catch (error) {
-      console.error('Error creating pull request:', error);
-      setError('Failed to create pull request. Please try again.');
+      console.error('Error creating blog post:', error);
+      setError('Failed to create blog post. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -81,9 +91,11 @@ export default function NewBlogPost() {
           <label className="block text-sm font-medium mb-2">
             Content
           </label>
-          <RichTextEditor
-            content={content}
-            onChange={setContent}
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[300px]"
+            placeholder="Write your blog post content here..."
           />
         </div>
 
@@ -93,7 +105,7 @@ export default function NewBlogPost() {
             disabled={saving}
             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {saving ? 'Creating Pull Request...' : 'Create Pull Request'}
+            {saving ? 'Creating Post...' : 'Create Post'}
           </button>
         </div>
       </div>

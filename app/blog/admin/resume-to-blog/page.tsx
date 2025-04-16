@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import type { BlogPost } from '@/lib/blog';
+import type { BlogPost } from '@/app/lib/directus';
 
 type ResumeSection = {
   name: string;

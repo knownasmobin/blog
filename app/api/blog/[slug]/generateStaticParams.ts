@@ -1,4 +1,4 @@
-import { getBlogPosts } from '@/lib/blog';
+import { getBlogPosts } from '@/app/lib/directus';
 
 // This function generates all possible paths for the dynamic route at build time
 export async function generateStaticParams() {
