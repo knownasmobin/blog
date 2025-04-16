@@ -7,6 +7,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
     ],
   },
   async headers() {
@@ -55,6 +59,10 @@ const nextConfig = {
   // Disable Vercel analytics and speed insights
   analyticsId: false,
   speedInsights: false,
+  // Enable strict mode
+  reactStrictMode: true,
+  // Configure asset prefix for production
+  assetPrefix: process.env.NODE_ENV === 'production' ? 'http://188.245.235.77:3000' : '',
 }
 
 module.exports = nextConfig
