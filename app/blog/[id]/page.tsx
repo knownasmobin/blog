@@ -1,4 +1,5 @@
 import { getBlogPost } from '@/app/lib/directus';
+import type { BlogPost } from '@/app/lib/directus';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
@@ -30,7 +31,7 @@ async function BlogPostContent({ id }: { id: string }) {
         </div>
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-4">
-            {post.tags.map((tag) => (
+            {post.tags.map((tag: string) => (
               <span
                 key={tag}
                 className="bg-[var(--primary)]/10 text-[var(--primary)] text-xs px-3 py-1 rounded-full"
