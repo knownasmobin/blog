@@ -2,43 +2,41 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/next'
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: {
-    default: 'Your Name - Personal Website',
-    template: '%s | Your Name'
+    default: 'Your Portfolio - Full Stack Developer & DevOps Engineer',
+    template: '%s | Your Portfolio'
   },
-  description: 'Personal website showcasing professional journey, skills, and blog posts.',
-  keywords: ['developer', 'portfolio', 'blog', 'personal website'],
+  description: 'Full Stack Developer and DevOps Engineer specializing in modern web development, cloud infrastructure, and automation.',
+  keywords: ['full stack developer', 'devops engineer', 'web development', 'cloud computing', 'portfolio', 'blog'],
   authors: [{ name: 'Your Name' }],
   creator: 'Your Name',
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-    siteName: 'Your Name',
-    title: 'Your Name - Personal Website',
-    description: 'Personal website showcasing professional journey, skills, and blog posts.',
+    siteName: 'Your Portfolio - Full Stack Developer & DevOps Engineer',
+    title: 'Your Portfolio - Full Stack Developer & DevOps Engineer',
+    description: 'Full Stack Developer and DevOps Engineer specializing in modern web development, cloud infrastructure, and automation.',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Your Name - Personal Website'
+        alt: 'Your Portfolio'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Your Name - Personal Website',
-    description: 'Personal website showcasing professional journey, skills, and blog posts.',
-    images: ['/og-image.jpg'],
-    creator: '@yourtwitter'
+    title: 'Your Portfolio - Full Stack Developer & DevOps Engineer',
+    description: 'Full Stack Developer and DevOps Engineer specializing in modern web development, cloud infrastructure, and automation.',
+    creator: '@yourusername',
+    images: ['/og-image.png']
   },
   robots: {
     index: true,
@@ -51,8 +49,10 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-site-verification',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+    shortcut: '/favicon-32x32.png'
   },
 }
 
@@ -66,8 +66,6 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           {children}
-          <Analytics />
-          <SpeedInsights />
         </Providers>
       </body>
     </html>

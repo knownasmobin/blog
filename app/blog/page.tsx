@@ -14,35 +14,54 @@ export const metadata = {
 async function BlogPosts() {
   const posts = await getBlogPosts();
 
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-[var(--muted)]">No blog posts found.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {posts.map((post) => (
         <article
           key={post.id}
-          className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl overflow-hidden hover:border-[var(--primary)]/30 transition-all"
+          className="blog-card group relative bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-[var(--primary)]/30"
         >
           {post.featured_image && (
-            <OptimizedImage
-              src={`http://localhost:8055/assets/${post.featured_image.id}`}
-              alt={post.title}
-              width={800}
-              height={400}
-              className="w-full h-48 object-cover"
-            />
+            <div className="relative h-48 overflow-hidden">
+              <OptimizedImage
+                src={`http://localhost:8055/assets/${post.featured_image.id}`}
+                alt={post.title}
+                width={800}
+                height={400}
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
           )}
           <div className="p-6">
-            <div className="text-xs font-medium text-[var(--primary)] uppercase tracking-wider mb-2">
-              {new Date(post.publish_date).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+            <div className="flex items-center gap-2 mb-3">
+              <time className="text-sm font-medium text-[var(--primary)] tracking-wider">
+                {new Date(post.publish_date).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
             </div>
-            <h2 className="text-xl font-semibold mb-2 text-[var(--text-color)] hover:text-[var(--primary)] transition-colors">
-              <Link href={`/blog/${post.id}`}>{post.title}</Link>
+            <h2 className="text-xl font-semibold mb-3 text-[var(--text-color)] group-hover:text-[var(--primary)] transition-colors">
+              <Link href={`/blog/${post.id}`} className="block">
+                {post.title}
+              </Link>
             </h2>
+            {post.excerpt && (
+              <p className="text-[var(--muted)] mb-4 line-clamp-2">
+                {post.excerpt}
+              </p>
+            )}
             <div className="flex flex-wrap gap-2 mb-4">
-              {post.tags.map((tag: string) => (
+              {post.tags?.map((tag: string) => (
                 <span
                   key={tag}
                   className="bg-[var(--primary)]/10 text-[var(--primary)] text-xs px-3 py-1 rounded-full"
@@ -53,7 +72,7 @@ async function BlogPosts() {
             </div>
             <Link
               href={`/blog/${post.id}`}
-              className="text-[var(--primary)] hover:text-[var(--primary)]/80 transition-colors inline-flex items-center group"
+              className="inline-flex items-center text-[var(--primary)] hover:text-[var(--primary)]/80 transition-colors group/link"
             >
               Read article
               <svg
@@ -66,7 +85,7 @@ async function BlogPosts() {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="ml-1 group-hover:translate-x-1 transition-transform"
+                className="ml-1 transform group-hover/link:translate-x-1 transition-transform"
               >
                 <path d="M5 12h14"></path>
                 <path d="M12 5l7 7-7 7"></path>
@@ -81,13 +100,17 @@ async function BlogPosts() {
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--text-color)]">
-      <div className="container mx-auto px-4 py-24">
+    <main className="min-h-screen bg-[var(--background)] text-[var(--text-color)]">
+      <div className="container mx-auto px-4 py-16 sm:py-24">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-8">Blog</h1>
-          <p className="text-[var(--muted)] mb-12">
-            Thoughts, insights, and updates from my journey.
-          </p>
+          <header className="text-center mb-16">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[var(--primary)] to-[var(--primary-dark)]">
+              Blog
+            </h1>
+            <p className="text-lg text-[var(--muted)] max-w-2xl mx-auto">
+              Thoughts, insights, and updates from my journey in web development and technology.
+            </p>
+          </header>
 
           <ErrorBoundary>
             <Suspense fallback={<Loading />}>
@@ -96,6 +119,6 @@ export default function BlogPage() {
           </ErrorBoundary>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

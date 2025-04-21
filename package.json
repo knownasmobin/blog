@@ -16,9 +16,7 @@
     "@tanstack/react-query-devtools": "^5.0.0",
     "@vercel/analytics": "^1.1.0",
     "@vercel/speed-insights": "^1.0.0",
-    "bcryptjs": "^2.4.3",
     "next": "14.1.0",
-    "next-auth": "^4.24.5",
     "next-themes": "^0.2.1",
     "react": "^18",
     "react-dom": "^18",
@@ -26,7 +24,6 @@
     "typescript": "^5.0.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

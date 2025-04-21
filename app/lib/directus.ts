@@ -1,4 +1,4 @@
-import { createDirectus, rest, readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk';
+import { createDirectus, rest, readItems, readItem } from '@directus/sdk';
 
 const directusUrl = process.env.DIRECTUS_URL || 'http://localhost:8055';
 const directus = createDirectus(directusUrl).with(rest());
@@ -55,22 +55,4 @@ export const getBlogPost = async (id: string) => {
     }
     throw error;
   }
-};
-
-export const createBlogPost = async (post: Omit<BlogPost, 'id'>) => {
-  return await directus.request(
-    createItem('blog_posts', post)
-  );
-};
-
-export const updateBlogPost = async (id: string, post: Partial<BlogPost>) => {
-  return await directus.request(
-    updateItem('blog_posts', id, post)
-  );
-};
-
-export const deleteBlogPost = async (id: string) => {
-  return await directus.request(
-    deleteItem('blog_posts', id)
-  );
 }; 

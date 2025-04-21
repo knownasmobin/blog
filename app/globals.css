@@ -30,183 +30,113 @@ html {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
-  font-weight: 700;
-  position: relative;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-purple-500;
 }
 
 /* Improved link contrast and accessibility */
 a {
-  @apply text-[var(--link-color)] hover:text-[var(--link-hover)] visited:text-[var(--link-visited)] transition-colors;
-  text-decoration: none;
-  position: relative;
-  font-weight: 500;
+  @apply text-[var(--primary)] hover:text-[var(--primary-dark)] transition-colors;
 }
 
 a:not(.btn):not(.social-link)::after {
   content: '';
-  position: absolute;
-  width: 100%;
+  display: block;
+  width: 0;
   height: 2px;
-  bottom: -2px;
-  left: 0;
-  background-color: var(--link-color);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.3s ease;
+  background: var(--primary);
+  transition: width 0.3s;
 }
 
 a:not(.btn):not(.social-link):hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
+  width: 100%;
 }
 
 a:focus {
-  @apply outline-none ring-2 ring-[var(--primary)] ring-offset-2 ring-offset-[var(--background)];
+  @apply outline-none ring-2 ring-[var(--primary)] ring-opacity-50;
 }
 
 /* Improved button styles */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1.75rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  color: var(--button-text);
-  border: 2px solid transparent;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  @apply inline-flex items-center justify-center px-6 py-2 rounded-lg font-medium transition-all duration-300;
 }
 
 .btn::after {
   content: '';
   position: absolute;
-  width: 100%;
-  height: 100%;
   top: 0;
   left: 0;
-  background: rgba(255, 255, 255, 0.1);
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.6s;
 }
 
 .btn:hover::after {
-  transform: translateX(0);
+  transform: translateX(100%);
 }
 
 .btn-primary {
-  background-color: var(--button-bg);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
-  border-color: var(--button-bg);
+  @apply bg-[var(--primary)] text-white hover:bg-[var(--primary-dark)];
 }
 
 .btn-primary:hover {
-  background-color: var(--button-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
-  border-color: var(--button-hover);
+  @apply shadow-lg transform -translate-y-0.5;
 }
 
 .btn.btn-secondary {
-  @apply border border-[var(--border-color)] hover:bg-[var(--light-bg)] shadow-sm hover:shadow-md;
+  @apply bg-[var(--card-bg)] text-[var(--text-color)] border border-[var(--border-color)];
 }
 
 .btn-outline {
-  background-color: transparent;
-  border: 2px solid var(--primary);
-  color: var(--primary);
+  @apply border border-[var(--primary)] text-[var(--primary)] bg-transparent;
 }
 
 .btn-outline:hover {
-  background-color: var(--primary);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+  @apply bg-[var(--primary)] text-white;
 }
 
 :root {
   --background: #ffffff;
-  --foreground: #000000;
-  --card-bg: #f8f9fa;
-  --border-color: #e9ecef;
-  --text-color: #212529;
+  --light-bg: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-color: #1a1a1a;
   --muted: #6c757d;
-  --primary: #0d6efd;
-  --secondary: #6c757d;
-  --accent: #0dcaf0;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --link-color: #2563eb;
-  --link-hover: #1d4ed8;
-  --link-visited: #1e40af;
-  --button-bg: #2563eb;
-  --button-hover: #1d4ed8;
-  --button-text: #ffffff;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
-  --color-text: var(--text-color);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --primary: #0070f3;
+  --primary-dark: #0051a2;
+  --accent: #7928ca;
+  --border-color: #e5e7eb;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
-    --foreground: #ffffff;
+    --light-bg: #111111;
     --card-bg: #1a1a1a;
+    --text-color: #ffffff;
+    --muted: #a0aec0;
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --accent: #8b5cf6;
     --border-color: #2d2d2d;
-    --text-color: #e9ecef;
-    --muted: #adb5bd;
-    --primary: #0d6efd;
-    --secondary: #6c757d;
-    --accent: #0dcaf0;
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --link-color: #60a5fa;
-    --link-hover: #3b82f6;
-    --link-visited: #93c5fd;
-    --button-bg: #3b82f6;
-    --button-hover: #2563eb;
-    --button-text: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--text-color);
-  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-sans);
   font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.75;
-  letter-spacing: -0.01em;
+  line-height: 1.5;
+  color: var(--text-color);
+  background: var(--background);
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  max-width: 100vw;
-  overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  min-height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    var(--background) 0%,
-    var(--card-bg) 100%
-  );
-  background-attachment: fixed;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Resume section styles */

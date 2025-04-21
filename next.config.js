@@ -12,6 +12,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: true,
   },
   async headers() {
     return [
@@ -48,12 +49,28 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ['@prisma/client'],
+    outputFileTracingRoot: undefined,
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+        'node_modules/@esbuild/linux-x64',
+      ],
+    },
   },
-  webpack: (config) => {
+  webpack: (config, { isServer }) => {
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     })
+
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      }
+    }
+
     return config
   },
   // Disable Vercel analytics and speed insights
@@ -61,8 +78,17 @@ const nextConfig = {
   speedInsights: false,
   // Enable strict mode
   reactStrictMode: true,
-  // Configure asset prefix for production
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'http://188.245.235.77:3000' : '',
+  // Ensure proper handling of static assets
+  poweredByHeader: false,
+  compress: true,
+  productionBrowserSourceMaps: true,
+  // Configure static file handling
+  staticPageGenerationTimeout: 1000,
+  // Ensure static files are served correctly
+  distDir: '.next',
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
 }
 
 module.exports = nextConfig
