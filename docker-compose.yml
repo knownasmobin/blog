@@ -22,26 +22,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      args:
-        - NODE_ENV=production
-    container_name: website-frontend
-    restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${NEXT_PUBLIC_PORT:-3000}:3000"
     environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_DIRECTUS_URL=http://directus:8055
-      - NEXT_TELEMETRY_DISABLED=1
-      - NEXT_PUBLIC_BASE_URL=http://localhost:3000
-      - NEXT_PUBLIC_ASSET_PREFIX=http://localhost:3000
-      - NEXT_PUBLIC_STATIC_URL=http://localhost:3000
+      - NEXT_PUBLIC_DIRECTUS_URL=${NEXT_PUBLIC_DIRECTUS_URL:-http://localhost:8055}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
     depends_on:
-      directus:
-        condition: service_healthy
+      - directus
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://0.0.0.0:3000"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -50,36 +41,19 @@ services:
   directus:
     image: directus/directus:latest
     container_name: website-directus
-    restart: unless-stopped
     ports:
-      - "8055:8055"
+      - "${DIRECTUS_PORT:-8055}:8055"
     environment:
-      # Security
-      - KEY=255d861b-5ea1-5996-9eb6-4e77cdd9399c
-      - SECRET=6116487b-cda1-52c2-b5b5-c8022c45e263
-      - ADMIN_EMAIL=admin@example.com
-      - ADMIN_PASSWORD=admin
-      
-      # Database
+      - KEY=${DIRECTUS_KEY:-255d861b-5ea1-5996-9c3d-8482d817c67}
+      - SECRET=${DIRECTUS_SECRET:-6116487b-cda1-52c2-b5b5-c8022c45e263}
+      - ADMIN_EMAIL=${DIRECTUS_ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_PASSWORD=${DIRECTUS_ADMIN_PASSWORD:-admin}
       - DB_CLIENT=pg
       - DB_HOST=postgres
       - DB_PORT=5432
-      - DB_DATABASE=directus
-      - DB_USER=directus
-      - DB_PASSWORD=directus
-      
-      # Cache
-      - CACHE_ENABLED=true
-      - CACHE_STORE=memory
-      
-      # Storage
-      - STORAGE_LOCATIONS=local
-      - STORAGE_LOCAL_DRIVER=local
-      - STORAGE_LOCAL_ROOT=/directus/uploads
-      
-      # Server
-      - PUBLIC_URL=http://localhost:8055
-      - PORT=8055
+      - DB_DATABASE=${POSTGRES_DB:-directus}
+      - DB_USER=${POSTGRES_USER:-directus}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-directus}
     volumes:
       - cms_uploads:/directus/uploads
       - cms_extensions:/directus/extensions
@@ -89,23 +63,21 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://0.0.0.0:8055/server/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8055/server/health"]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 30s
+      retries: 3
 
   # PostgreSQL Database Service
   postgres:
-    image: postgres:15-alpine
+    image: postgres:15
     container_name: website-postgres
-    restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
     environment:
-      - POSTGRES_USER=directus
-      - POSTGRES_PASSWORD=directus
-      - POSTGRES_DB=directus
+      - POSTGRES_DB=${POSTGRES_DB:-directus}
+      - POSTGRES_USER=${POSTGRES_USER:-directus}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-directus}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:

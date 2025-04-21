@@ -1,58 +1,48 @@
 import { createDirectus, rest, readItems, readItem } from '@directus/sdk';
 
-const directusUrl = process.env.DIRECTUS_URL || 'http://localhost:8055';
+const directusUrl = process.env.NEXT_PUBLIC_DIRECTUS_URL || 'http://localhost:8055';
+
 const directus = createDirectus(directusUrl).with(rest());
 
 export interface BlogPost {
   id: string;
   title: string;
+  slug: string;
   content: string;
-  featured_image: {
-    id: string;
-    filename_download: string;
-  } | null;
+  excerpt: string;
+  featured_image: string;
+  tags: string[];
   author: string;
   publish_date: string;
-  tags: string[];
-  status: 'published' | 'draft';
 }
 
-export const getBlogPosts = async () => {
+export async function getBlogPosts() {
   try {
-    return await directus.request(
+    const posts = await directus.request(
       readItems('blog_posts', {
-        filter: {
-          status: {
-            _eq: 'published'
-          }
-        },
         sort: ['-publish_date'],
-        fields: ['*', 'featured_image.id', 'featured_image.filename_download']
+        fields: ['*'],
       })
     );
+    return posts as BlogPost[];
   } catch (error) {
-    // During static generation, return empty array if Directus is not available
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('Directus server not available during static generation, returning empty array');
-      return [];
-    }
-    throw error;
+    console.error('Error fetching blog posts:', error);
+    // Return empty array if Directus is not available during static generation
+    return [];
   }
-};
+}
 
-export const getBlogPost = async (id: string) => {
+export async function getBlogPost(slug: string) {
   try {
-    return await directus.request(
-      readItem('blog_posts', id, {
-        fields: ['*', 'featured_image.id', 'featured_image.filename_download']
+    const post = await directus.request(
+      readItem('blog_posts', slug, {
+        fields: ['*'],
       })
     );
+    return post as BlogPost;
   } catch (error) {
-    // During static generation, return null if Directus is not available
-    if (process.env.NODE_ENV === 'production') {
-      console.warn('Directus server not available during static generation, returning null');
-      return null;
-    }
-    throw error;
+    console.error('Error fetching blog post:', error);
+    // Return null if Directus is not available during static generation
+    return null;
   }
-}; 
+} 
