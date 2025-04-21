@@ -1,176 +1,94 @@
-# Personal Website with Next.js and Directus CMS
+# Personal Website
 
-A modern personal website built with Next.js and Directus CMS, featuring a blog system and portfolio management.
+A modern, responsive personal website built with Next.js, TypeScript, and Tailwind CSS.
+
+## Features
+
+- Responsive design
+- Blog functionality
+- Skills showcase
+- Education and experience sections
+- Contact form
+- Dark mode support
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
-- **CMS**: Directus
-- **Database**: PostgreSQL
-- **Containerization**: Docker & Docker Compose
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Directus CMS
+- PostgreSQL
+- Docker
 
-## Prerequisites
+## Getting Started
 
-- Docker and Docker Compose installed
+### Prerequisites
+
+- Node.js 18+
+- Docker and Docker Compose
 - Git
 
-## Project Structure
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/website.git
+cd website
+```
+
+2. Create a `.env` file in the root directory with the following variables:
+```env
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_DIRECTUS_URL=http://localhost:8055
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+```
+
+3. Start the development environment:
+```bash
+docker-compose up -d
+```
+
+4. Access the website at http://localhost:3000
+
+## Development
+
+### Available Scripts
+
+- `npm run dev` - Start the development server
+- `npm run build` - Build the production application
+- `npm run start` - Start the production server
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+
+### Project Structure
 
 ```
 .
-├── app/                    # Next.js application
-├── directus/              # Directus CMS data
-│   ├── uploads/           # Media files
-│   └── database/          # Database files
-├── public/                # Static files
-├── .env                   # Environment variables
-├── docker-compose.yml     # Docker Compose configuration
-└── Dockerfile            # Frontend Docker configuration
+├── app/                 # Next.js app directory
+│   ├── components/      # React components
+│   ├── lib/            # Utility functions
+│   └── styles/         # Global styles
+├── cms/                # Directus CMS configuration
+├── public/             # Static assets
+└── types/              # TypeScript type definitions
 ```
 
-## Production Deployment
+## Deployment
 
-### Initial Setup
+The application is configured for Docker deployment. To deploy:
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd website
-   ```
-
-2. Create necessary directories:
-   ```bash
-   mkdir -p directus/uploads directus/database
-   ```
-
-3. Create and configure environment file:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your production values
-   ```
-
-4. Build and start the services:
-   ```bash
-   docker-compose up -d --build
-   ```
-
-5. Access the services:
-   - Frontend: http://your-domain:3000
-   - Directus Admin: http://your-domain:8055
-   - Directus API: http://your-domain:8055
-
-### Environment Variables
-
-Create a `.env` file with the following variables:
-
-```env
-# Next.js Frontend
-NEXT_PUBLIC_DIRECTUS_URL=http://your-domain:8055
-NEXTAUTH_URL=http://your-domain:3000
-NEXTAUTH_SECRET=your-secure-secret-key
-
-# Directus
-DIRECTUS_URL=http://your-domain:8055
-ADMIN_EMAIL=your-admin-email
-ADMIN_PASSWORD=your-secure-password
-DB_PASSWORD=your-secure-db-password
+1. Build the Docker images:
+```bash
+docker-compose build
 ```
 
-### Directus Setup
+2. Start the services:
+```bash
+docker-compose up -d
+```
 
-1. Access the Directus admin panel
-2. Log in with your admin credentials
-3. Create necessary collections:
-   - blog_posts
-   - portfolio_items
-   - media
-
-## Production Maintenance
-
-### Backups
-
-1. Database backup:
-   ```bash
-   docker-compose exec postgres pg_dump -U directus directus > backup_$(date +%Y%m%d).sql
-   ```
-
-2. Media files backup:
-   ```bash
-   tar -czf media_backup_$(date +%Y%m%d).tar.gz directus/uploads/
-   ```
-
-### Updates
-
-1. Pull latest changes:
-   ```bash
-   git pull origin main
-   ```
-
-2. Update Docker images:
-   ```bash
-   docker-compose pull
-   docker-compose up -d --build
-   ```
-
-### Monitoring
-
-1. Check service status:
-   ```bash
-   docker-compose ps
-   ```
-
-2. View logs:
-   ```bash
-   docker-compose logs -f [service-name]
-   ```
-
-## Security Considerations
-
-1. **Environment Variables**:
-   - Use strong, unique passwords
-   - Keep secrets secure
-   - Never commit .env file
-
-2. **Network Security**:
-   - Configure firewall rules
-   - Use HTTPS
-   - Restrict access to admin interfaces
-
-3. **Regular Updates**:
-   - Keep Docker images updated
-   - Monitor for security patches
-   - Regular backups
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Service Not Starting**:
-   ```bash
-   docker-compose logs [service-name]
-   ```
-
-2. **Database Issues**:
-   ```bash
-   docker-compose exec postgres psql -U directus
-   ```
-
-3. **Directus Issues**:
-   ```bash
-   docker-compose logs directus
-   ```
-
-### Recovery
-
-1. **Database Recovery**:
-   ```bash
-   docker-compose exec -T postgres psql -U directus directus < backup.sql
-   ```
-
-2. **Media Recovery**:
-   ```bash
-   tar -xzf media_backup.tar.gz -C directus/uploads/
-   ```
+The application will be available at the URL specified in your `NEXT_PUBLIC_SITE_URL` environment variable.
 
 ## License
 
