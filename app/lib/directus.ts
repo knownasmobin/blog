@@ -7,10 +7,11 @@ const directus = createDirectus(directusUrl).with(rest());
 export interface BlogPost {
   id: string;
   title: string;
-  slug: string;
   content: string;
   excerpt: string;
-  featured_image: string;
+  featured_image: {
+    id: string;
+  };
   tags: string[];
   author: string;
   publish_date: string;
@@ -21,7 +22,7 @@ export async function getBlogPosts() {
     const posts = await directus.request(
       readItems('blog_posts', {
         sort: ['-publish_date'],
-        fields: ['*'],
+        fields: ['id', 'title', 'content', 'excerpt', 'featured_image.id', 'tags', 'author', 'publish_date'],
       })
     );
     return posts as BlogPost[];
@@ -32,11 +33,11 @@ export async function getBlogPosts() {
   }
 }
 
-export async function getBlogPost(slug: string) {
+export async function getBlogPost(id: string) {
   try {
     const post = await directus.request(
-      readItem('blog_posts', slug, {
-        fields: ['*'],
+      readItem('blog_posts', id, {
+        fields: ['id', 'title', 'content', 'excerpt', 'featured_image.id', 'tags', 'author', 'publish_date'],
       })
     );
     return post as BlogPost;

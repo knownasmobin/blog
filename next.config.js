@@ -73,9 +73,6 @@ const nextConfig = {
 
     return config
   },
-  // Disable Vercel analytics and speed insights
-  analyticsId: false,
-  speedInsights: false,
   // Enable strict mode
   reactStrictMode: true,
   // Ensure proper handling of static assets

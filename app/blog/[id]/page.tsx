@@ -43,7 +43,7 @@ async function BlogPostContent({ id }: { id: string }) {
         )}
       </header>
 
-      {post.featured_image && (
+      {post.featured_image && post.featured_image.id && (
         <OptimizedImage
           src={`http://localhost:8055/assets/${post.featured_image.id}`}
           alt={post.title}
